@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Create Todo</title>
+{% endblock %}
+
+{% block content %}
+    <h1 class="ui header">Új ToDo feladat létehozása:</h1>
+    <form class="ui form" action="{% url 'new_todo_form' %}" method="POST">
+        {% csrf_token %}
+        <div class="field">
+            <label>{{form.title.label_tag}}</label>
+            <input type="text" name="{{form.title.html_name}}">
+        </div>
+        <div class="field">
+            <label>{{form.desc.label_tag}}</label>
+            <textarea cols="20" rows="5" name="{{form.desc.html_name}}"></textarea>
+        </div>
+        <div class="field">
+            <div class="ui checkbox">
+              <input id="{{form.private.id_for_label}}" type="checkbox" name="{{form.private.html_name}}" tabindex="0" class="hidden">
+              {{form.private.label_tag}}
+            </div>
+        </div>
+        <button class="ui button" type="submit">Létrehozom</button>
+        <button id="back_button" class="ui button secondary" type="button">Mégsem</button>
+        <script>
+            $( "#back_button" ).click(
+                function() {
+                    window.history.back();
+                }
+            );
+        </script>
+    </form>
+{% endblock %}

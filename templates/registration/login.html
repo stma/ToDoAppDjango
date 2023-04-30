@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="ui center aligned container">
+      {% if form.errors %}
+        <h2 class="center aligned header">Nem sikerűlt a belépés, kérlek próbáld újra.</h2>
+      {% endif %}
+
+      {% if next %}
+        {% if user.is_authenticated %}
+          <h2 class="center aligned header">Ezzel a belépéssel nem vagy jogosúlt az oldal megtekintésére.</h2>
+        {% else %}
+          <h2 class="ui center aligned header">Belépés szükséges</h2>
+        {% endif %}
+      {% endif %}
+
+      <form class="ui form" style="width: 50%; margin: 20px auto" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+            <div class="field">
+                <label>{{form.username.label_tag}}</label>
+                <input type="text" name="{{form.username.html_name}}">
+            </div>
+            <div class="field">
+                <label>{{form.password.label_tag}}</label>
+                <input type="password" name="{{form.password.html_name}}">
+            </div>
+
+            <button class="ui button" type="submit">Belépés</button>
+
+        <input type="hidden" name="next" value="{{ next }}" />
+      </form>
+
+      <div class="ui center aligned header"><a href="{% url 'password_reset' %}">Elfelejtette a jelszavát?</a></div>
+    </div>
+{% endblock %}

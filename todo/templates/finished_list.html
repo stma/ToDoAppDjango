@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Finished tasks</title>
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="ui header">Már elvégzett feladataim:</h1>
+    <div class="ui centered cards">
+        {% for t in todos %}
+            <div class="green card">
+            <div id="todo_content_{{t.id}}" class="content">
+                <div class="header">
+                    {{ t.title }}
+                </div>
+
+                <div class="meta">
+                    Létrehozva: {{ t.created_at }} {% if t.finished_at %} Megoldva: {{ t.finished_at }} {% endif %}
+                </div>
+
+                <div class="description">
+                    {{ t.desc }}
+                </div>
+            </div>
+
+            <form id="delete_form{{t.id}}" style="display: none;" method="post" action="{% url 'delete_todo' %}">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{t.id}}">
+                <input type="submit" value="Törlés">
+            </form>
+            <form id="finish_form{{t.id}}" style="display: none;" method="post" action="{% url 'finish_todo' %}">
+                {{finish_error}}
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{t.id}}">
+                <input type="submit" value="{% if t.finished_at %} Visszaállít {% else %} Megoldva {% endif %}">
+            </form>
+            <div class="extra content">
+              <div class="ui two buttons">
+                <div id="finish_button{{t.id}}" class="ui secondary button">
+                    {% if t.finished_at %} Visszaállít {% else %} Megoldva {% endif %}
+                </div>
+                <div id="delete_button{{t.id}}" class="ui basic red button">Törlés</div>
+              </div>
+                <script>
+                    $("#todo_content_{{t.id}}").click(
+                        function() {
+                            window.location = '{{t.get_absolute_url}}'
+                        }
+                    );
+                    $( "#delete_button{{t.id}}" ).click(
+                        function() {
+                            $( "#delete_form{{t.id}}" ).submit();
+                        }
+                    );
+                    $( "#finish_button{{t.id}}" ).click(
+                        function() {
+                            $( "#finish_form{{t.id}}" ).submit();
+                        }
+                    );
+                </script>
+            </div>
+        </div>
+
+        {% endfor %}
+
+
+    </div>
+
+    <div class="ui clearing divider"></div>
+
+    {% if all_item_num > limit %}
+        <div class="ui text centered container" style="display: flex; justify-content: center;">
+            <div class="ui pagination menu">
+                {% if prev_page != None %}
+              <a class="item" href="{% url 'finished_todo_list' %}"> << </a>
+                <a class="item" href="{% url 'finished_todo_list' %}?page={{prev_page}}"> < </a>
+                {% endif %}
+                {% if prev_page != None and next_page != None %}
+              <div class="disabled item"> - </div>
+                {% endif %}
+                {% if next_page != None %}
+              <a class="item" href="{% url 'finished_todo_list' %}?page={{next_page}}"> > </a>
+              <a class="item" href="{% url 'finished_todo_list' %}?page={{last_page}}"> >> </a>
+                {% endif %}
+            </div>
+        </div>
+
+    {% endif %}
+
+{% endblock %}

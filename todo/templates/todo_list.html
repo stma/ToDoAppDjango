@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title%}
+    <title>Todo lista oldal</title>
+{% endblock %}
+
+{% block content %}
+    <h1 class="ui header">Feladataim: {{user.get_username}}</h1>
+    {% if not todos %}
+        Nincsenek elvégzetlen feladataid. <i class="smile outline icon"></i>
+    {% endif %}
+
+    <div class="ui centered cards">
+        {% for t in todos %}
+            <div class="red card">
+                <div id="todo_content_{{t.id}}" class="content">
+                    <div class="header">
+                        {{ t.title }}
+                    </div>
+
+                    <div class="meta">
+                        Létrehozva: {{ t.created_at }} {% if t.finished_at %} Megoldva: {{ t.finished_at }} {% endif %}
+                    </div>
+
+                    <div class="description">
+                        {{ t.desc }}
+                    </div>
+                </div>
+
+                <form id="delete_form{{t.id}}" style="display: none;" method="post" action="{% url 'delete_todo' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{t.id}}">
+                    <input type="submit" value="Törlés">
+                </form>
+                <form id="finish_form{{t.id}}" style="display: none;" method="post" action="{% url 'finish_todo' %}">
+                    {{finish_error}}
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{t.id}}">
+                    <input type="submit" value="{% if t.finished_at %} Visszaállít {% else %} Megoldva {% endif %}">
+                </form>
+                <div class="extra content">
+                  <div class="ui two buttons">
+                    <div id="finish_button{{t.id}}" class="ui secondary button">
+                        {% if t.finished_at %} Visszaállít {% else %} Megoldva {% endif %}
+                    </div>
+                    <div id="delete_button{{t.id}}" class="ui basic red button">Törlés</div>
+                  </div>
+                    <script>
+                        $("#todo_content_{{t.id}}").click(
+                            function() {
+                                window.location = '{{t.get_absolute_url}}'
+                            }
+                        );
+                        $( "#delete_button{{t.id}}" ).click(
+                            function() {
+                                $( "#delete_form{{t.id}}" ).submit();
+                            }
+                        );
+                        $( "#finish_button{{t.id}}" ).click(
+                            function() {
+                                $( "#finish_form{{t.id}}" ).submit();
+                            }
+                        );
+                    </script>
+                </div>
+            </div>
+
+
+        {% endfor %}
+    </div>
+    {% if already_done %}
+        <div class="ui clearing divider"></div>
+        <h3 class="ui header">Már elvégzett feladataim:</h3>
+        <div class="ui centered cards">
+            {% for t in already_done %}
+                <div class="green card">
+                <div id="todo_content_{{t.id}}" class="content">
+                    <div class="header">
+                        {{ t.title }}
+                    </div>
+
+                    <div class="meta">
+                        Létrehozva: {{ t.created_at }} {% if t.finished_at %} Megoldva: {{ t.finished_at }} {% endif %}
+                    </div>
+
+                    <div class="description">
+                        {{ t.desc }}
+                    </div>
+                </div>
+
+                <form id="delete_form{{t.id}}" style="display: none;" method="post" action="{% url 'delete_todo' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{t.id}}">
+                    <input type="submit" value="Törlés">
+                </form>
+                <form id="finish_form{{t.id}}" style="display: none;" method="post" action="{% url 'finish_todo' %}">
+                    {{finish_error}}
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{t.id}}">
+                    <input type="submit" value="{% if t.finished_at %} Visszaállít {% else %} Megoldva {% endif %}">
+                </form>
+                <div class="extra content">
+                  <div class="ui two buttons">
+                    <div id="finish_button{{t.id}}" class="ui secondary button">
+                        {% if t.finished_at %} Visszaállít {% else %} Megoldva {% endif %}
+                    </div>
+                    <div id="delete_button{{t.id}}" class="ui basic red button">Törlés</div>
+                  </div>
+                    <script>
+                        $("#todo_content_{{t.id}}").click(
+                            function() {
+                                window.location = '{{t.get_absolute_url}}'
+                            }
+                        );
+                        $( "#delete_button{{t.id}}" ).click(
+                            function() {
+                                $( "#delete_form{{t.id}}" ).submit();
+                            }
+                        );
+                        $( "#finish_button{{t.id}}" ).click(
+                            function() {
+                                $( "#finish_form{{t.id}}" ).submit();
+                            }
+                        );
+                    </script>
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock %}

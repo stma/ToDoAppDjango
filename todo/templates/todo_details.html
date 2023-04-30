@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>ToDo details</title>
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="ui header">{{todo.title}}{% if todo.finished_at %} - MEGOLDVA {% endif %}</h1>
+    <h3 class="ui header meta">{{todo.author.username}}</h3>
+    {% if error %}
+        <h4 class="ui header">{{error}}</h4>
+    {% endif %}
+    <p>{{todo.desc}}</p>
+    {% if not todo.private %}
+        <p><b>Nyilvános feladat</b></p>
+    {% endif %}
+    <p>{{todo.created_at}}</p>
+
+    <div class="ui divider"></div>
+
+    <form class="ui form" method="post" action="{% url 'delete_todo' %}">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{todo.id}}">
+        <button class="ui red button" type="submit">Törlés</button>
+    </form>
+
+    <form class="ui form" method="post" action="{% url 'finish_todo' %}">
+        {{finish_error}}
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{todo.id}}">
+        <button type="submit" class="ui secondary button">
+            {% if todo.finished_at %} Visszaállít {% else %} Megoldva {% endif %}
+        </button>
+    </form>
+
+    {% if todo.finished_at %}
+        <p><b>Megoldva ekkor: </b>{{todo.finished_at}}</p>
+    {% endif %}
+
+    <button id="back_to_list_button" class="ui basic button">Vissza a listára</button>
+    <script>
+        $( "#back_to_list_button" ).click(
+            function() {
+                window.location = '{% url 'todo_index' %}';
+            }
+        );
+    </script>
+
+{% endblock %}
